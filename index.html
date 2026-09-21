@@ -6,59 +6,35 @@
 <title>Winter Arc Tracker</title>
 <style>
   :root {
-    /* Autumn Theme Defaults */
-    --bg-color: #241a16;
-    --accent: #bda56d;
-    --text-main: #f4ede4;
-    --panel-bg: #32251f;
-    --grid-bg: #403028;
-    --grid-text: #a89f91;
-    --perfect-color: #f2e8cf; /* Cream */
-    --perfect-text: #241a16;
-    --partial-color: #c9bca7; /* Beige */
-    --partial-text: #241a16;
+    --bg-color: #241a16; --accent: #bda56d; --text-main: #f4ede4;
+    --panel-bg: #32251f; --grid-bg: #403028; --grid-text: #a89f91;
+    --perfect-color: #f2e8cf; --perfect-text: #241a16;
+    --partial-color: #c9bca7; --partial-text: #241a16;
   }
-  
   body.sprint-mode {
-    /* Winter Sprint Theme */
-    --bg-color: #0b1524;
-    --accent: #fdf5e6;
-    --text-main: #ffffff;
-    --panel-bg: #152238;
-    --grid-bg: #1d2d44;
-    --grid-text: #8c9bab;
-    --perfect-color: #6c7787; /* Soft steel navy */
-    --perfect-text: #ffffff;
-    --partial-color: #b2b9c6; /* Soft steel sky */
-    --partial-text: #0b1524;
+    --bg-color: #0b1524; --accent: #fdf5e6; --text-main: #ffffff;
+    --panel-bg: #152238; --grid-bg: #1d2d44; --grid-text: #8c9bab;
+    --perfect-color: #6c7787; --perfect-text: #ffffff;
+    --partial-color: #b2b9c6; --partial-text: #0b1524;
   }
-
-  body { background-color: #000; display: flex; justify-content: center; align-items: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; margin: 0; padding: 20px; color: var(--text-main); }
+  body { background-color: #000; display: flex; justify-content: center; align-items: center; font-family: -apple-system, sans-serif; min-height: 100vh; margin: 0; padding: 20px; color: var(--text-main); }
   .widget { background: var(--bg-color); width: 420px; border-radius: 24px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transition: all 0.3s ease; }
-  
   .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 6px; }
   .tab { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-main); cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 0.9em; opacity: 0.5; transition: 0.2s; }
   .tab.active { background: rgba(255,255,255,0.05); opacity: 1; color: var(--accent); }
-  
-  .quote { text-align: center; font-style: italic; font-size: 0.95em; margin-bottom: 20px; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; color: var(--text-main); }
-  
+  .quote { text-align: center; font-style: italic; font-size: 0.95em; margin-bottom: 20px; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; }
   .stats { display: flex; justify-content: space-between; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; }
   .stat-box { text-align: center; flex: 1; }
   .stat-label { font-size: 0.65em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; }
   .stat-value { font-size: 1.3em; font-weight: 700; color: var(--accent); margin-top: 6px; transition: color 0.3s; }
-  
   .grid-container { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; margin-bottom: 20px; }
   .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  
   .day { background: var(--grid-bg); color: var(--grid-text); padding: 12px 0; text-align: center; font-size: 0.85em; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
   .day:hover { transform: scale(1.05); }
   .day.special { grid-column: span 7; font-weight: bold; }
-  
-  /* Dynamic State Colors */
   .day.perfect { background: var(--perfect-color) !important; color: var(--perfect-text) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
   .day.partial { background: var(--partial-color) !important; color: var(--partial-text) !important; }
   .day.active-day { border-color: var(--accent); transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 2; position: relative; }
-  
   .checklist { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; }
   .checklist-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
   .task { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 10px; transition: 0.2s; }
@@ -68,7 +44,6 @@
   .task input[type="text"] { background: transparent; border: none; color: var(--text-main); flex: 1; font-size: 0.95em; outline: none; }
   .task button { background: transparent; border: none; color: rgba(255,255,255,0.3); cursor: pointer; font-size: 1em; transition: 0.2s; }
   .task button:hover { color: #ff5555; }
-  
   .add-task { display: flex; gap: 10px; margin-top: 15px; }
   .add-task input { flex: 1; padding: 12px; border-radius: 8px; border: none; background: rgba(0,0,0,0.3); color: white; outline: none; }
   .add-task input:focus { border: 1px solid var(--accent); }
@@ -117,12 +92,26 @@
   let currentTheme = 'autumn';
   let currentDay = 1;
   
-  let tasks = JSON.parse(localStorage.getItem('arcTasks')) || {
+  // Ensure the old tasks format gets updated with the new sprintVacation array if it didn't exist
+  let defaultTasks = {
     autumn: ['Warm tea & plan the day', '30 min outdoor crisp air walk', 'Read 10 pages by cozy light'],
-    sprint: ['Wake up early', 'Morning workout', 'Build something']
+    sprint: ['Wake up early', 'Morning workout', 'Build something'],
+    sprintVacation: ['Relax and disconnect', 'Explore a new area', 'Read for leisure']
   };
   
-  let progress = JSON.parse(localStorage.getItem('arcProgress')) || { autumn: {}, sprint: {} };
+  let savedTasks = JSON.parse(localStorage.getItem('arcTasks'));
+  let tasks = { ...defaultTasks, ...(savedTasks || {}) };
+  if (!tasks.sprintVacation) tasks.sprintVacation = defaultTasks.sprintVacation;
+
+  let progress = JSON.parse(localStorage.getItem('arcProgress')) || { autumn: {}, sprint: {}, sprintVacation: {} };
+  if (!progress.sprintVacation) progress.sprintVacation = {};
+
+  function getTaskType(theme, day) {
+    if (theme === 'sprint' && ((day >= 19 && day <= 28) || (day >= 49 && day <= 55))) {
+      return 'sprintVacation';
+    }
+    return theme;
+  }
 
   function saveData() {
     localStorage.setItem('arcTasks', JSON.stringify(tasks));
@@ -154,8 +143,9 @@
     let perfectCount = 0;
     
     for(let i = 1; i <= days; i++) {
-      const totalTasks = tasks[currentTheme].length;
-      const dayData = progress[currentTheme][i] || [];
+      const type = getTaskType(currentTheme, i);
+      const totalTasks = tasks[type].length;
+      const dayData = progress[type][i] || [];
       const checkedTasks = dayData.filter((v, idx) => v === true && idx < totalTasks).length;
       
       let statusClass = '';
@@ -174,7 +164,11 @@
     }
     
     document.getElementById('dayIndex').innerText = `#${currentDay} / ${days}`;
-    document.getElementById('checklistHeader').innerText = `Day ${currentDay} Tracker`;
+    
+    const activeType = getTaskType(currentTheme, currentDay);
+    document.getElementById('checklistHeader').innerText = activeType === 'sprintVacation' 
+        ? `Day ${currentDay} Tracker (Vacation Mode)` 
+        : `Day ${currentDay} Tracker`;
     
     const perfectStat = document.getElementById('perfectDaysCount');
     perfectStat.innerText = `${perfectCount} 🔥`;
@@ -184,10 +178,11 @@
   function renderTasks() {
     const list = document.getElementById('taskList');
     list.innerHTML = '';
-    const dayData = progress[currentTheme][currentDay] || [];
-    const total = tasks[currentTheme].length;
+    const type = getTaskType(currentTheme, currentDay);
+    const dayData = progress[type][currentDay] || [];
+    const total = tasks[type].length;
     
-    tasks[currentTheme].forEach((task, index) => {
+    tasks[type].forEach((task, index) => {
       const isChecked = dayData[index] ? 'checked' : '';
       list.innerHTML += `
         <div class="task">
@@ -204,23 +199,26 @@
   }
 
   function toggleTask(index, isChecked) {
-    if (!progress[currentTheme][currentDay]) progress[currentTheme][currentDay] = [];
-    progress[currentTheme][currentDay][index] = isChecked;
+    const type = getTaskType(currentTheme, currentDay);
+    if (!progress[type][currentDay]) progress[type][currentDay] = [];
+    progress[type][currentDay][index] = isChecked;
     saveData();
     renderGrid();
     renderTasks();
   }
 
   function editTask(index, newValue) {
-    tasks[currentTheme][index] = newValue;
+    const type = getTaskType(currentTheme, currentDay);
+    tasks[type][index] = newValue;
     saveData();
   }
 
   function deleteTask(index) {
-    tasks[currentTheme].splice(index, 1);
-    for (let day in progress[currentTheme]) {
-       if (progress[currentTheme][day]) {
-         progress[currentTheme][day].splice(index, 1);
+    const type = getTaskType(currentTheme, currentDay);
+    tasks[type].splice(index, 1);
+    for (let day in progress[type]) {
+       if (progress[type][day]) {
+         progress[type][day].splice(index, 1);
        }
     }
     saveData();
@@ -233,7 +231,8 @@
     const val = input.value.trim();
     if (!val) return;
     
-    tasks[currentTheme].push(val);
+    const type = getTaskType(currentTheme, currentDay);
+    tasks[type].push(val);
     saveData();
     input.value = '';
     renderGrid();
