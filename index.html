@@ -32,9 +32,19 @@
   .day { background: var(--grid-bg); color: var(--grid-text); padding: 12px 0; text-align: center; font-size: 0.85em; font-weight: 600; border-radius: 6px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
   .day:hover { transform: scale(1.05); }
   .day.special { grid-column: span 7; font-weight: bold; }
-  .day.perfect { background: var(--perfect-color) !important; color: var(--perfect-text) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-  .day.partial { background: var(--partial-color) !important; color: var(--partial-text) !important; }
+  
+  /* Vacation Visuals */
+  .day.vacation-mode:not(.perfect):not(.partial) { 
+    background: #b2b9c6 !important; /* Soft steel sky color */
+    color: #0b1524 !important; 
+    border: 2px dashed #0b1524 !important; 
+  }
+  .day.vacation-mode.partial { border: 2px dashed var(--partial-text) !important; }
+  
+  .day.perfect { background: var(--perfect-color) !important; color: var(--perfect-text) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 2px solid transparent !important; }
+  .day.partial { background: var(--partial-color) !important; color: var(--partial-text) !important; border-style: solid; }
   .day.active-day { border-color: var(--accent); transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.4); z-index: 2; position: relative; }
+  
   .checklist { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; }
   .checklist-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
   .task { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 10px; transition: 0.2s; }
@@ -49,6 +59,9 @@
   .add-task input:focus { border: 1px solid var(--accent); }
   .add-task button { padding: 12px 20px; border-radius: 8px; border: none; background: var(--accent); color: var(--bg-color); font-weight: bold; cursor: pointer; transition: 0.2s; }
   .add-task button:hover { opacity: 0.8; }
+  
+  .vacation-toggle { margin-top: 20px; font-size: 0.85em; opacity: 0.8; display: flex; align-items: center; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .vacation-toggle input { cursor: pointer; accent-color: var(--accent); transform: scale(1.2); margin-right: 8px; }
 </style>
 </head>
 <body>
@@ -80,6 +93,12 @@
       <input type="text" id="newTaskInput" placeholder="Add new discipline..." onkeypress="handleEnter(event)">
       <button onclick="addTask()">Add</button>
     </div>
+    <div class="vacation-toggle">
+      <label>
+        <input type="checkbox" id="vacationCheckbox" onchange="toggleVacation(this.checked)">
+        🌴 Set as Vacation Day
+      </label>
+    </div>
   </div>
 </div>
 
@@ -92,30 +111,21 @@
   let currentTheme = 'autumn';
   let currentDay = 1;
   
-  // Ensure the old tasks format gets updated with the new sprintVacation array if it didn't exist
   let defaultTasks = {
     autumn: ['Warm tea & plan the day', '30 min outdoor crisp air walk', 'Read 10 pages by cozy light'],
-    sprint: ['Wake up early', 'Morning workout', 'Build something'],
-    sprintVacation: ['Relax and disconnect', 'Explore a new area', 'Read for leisure']
+    sprint: ['Wake up early', 'Morning workout', 'Build something']
   };
   
   let savedTasks = JSON.parse(localStorage.getItem('arcTasks'));
   let tasks = { ...defaultTasks, ...(savedTasks || {}) };
-  if (!tasks.sprintVacation) tasks.sprintVacation = defaultTasks.sprintVacation;
 
-  let progress = JSON.parse(localStorage.getItem('arcProgress')) || { autumn: {}, sprint: {}, sprintVacation: {} };
-  if (!progress.sprintVacation) progress.sprintVacation = {};
-
-  function getTaskType(theme, day) {
-    if (theme === 'sprint' && ((day >= 19 && day <= 28) || (day >= 49 && day <= 55))) {
-      return 'sprintVacation';
-    }
-    return theme;
-  }
+  let progress = JSON.parse(localStorage.getItem('arcProgress')) || { autumn: {}, sprint: {} };
+  let vacations = JSON.parse(localStorage.getItem('arcVacations')) || { autumn: {}, sprint: {} };
 
   function saveData() {
     localStorage.setItem('arcTasks', JSON.stringify(tasks));
     localStorage.setItem('arcProgress', JSON.stringify(progress));
+    localStorage.setItem('arcVacations', JSON.stringify(vacations));
   }
 
   function switchTab(theme) {
@@ -136,6 +146,12 @@
     renderTasks();
   }
 
+  function toggleVacation(isChecked) {
+    vacations[currentTheme][currentDay] = isChecked;
+    saveData();
+    renderGrid();
+  }
+
   function renderGrid() {
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
@@ -143,10 +159,10 @@
     let perfectCount = 0;
     
     for(let i = 1; i <= days; i++) {
-      const type = getTaskType(currentTheme, i);
-      const totalTasks = tasks[type].length;
-      const dayData = progress[type][i] || [];
+      const totalTasks = tasks[currentTheme].length;
+      const dayData = progress[currentTheme][i] || [];
       const checkedTasks = dayData.filter((v, idx) => v === true && idx < totalTasks).length;
+      const isVacation = vacations[currentTheme][i];
       
       let statusClass = '';
       if (totalTasks > 0 && checkedTasks === totalTasks) {
@@ -156,6 +172,8 @@
         statusClass = 'partial';
       }
       
+      if (isVacation) statusClass += ' vacation-mode';
+      
       const activeClass = i === currentDay ? 'active-day' : '';
       const specialClass = (i === days && config[currentTheme].special) ? 'special' : '';
       const content = specialClass ? `Day ${i}: ${config[currentTheme].special}` : i;
@@ -164,11 +182,8 @@
     }
     
     document.getElementById('dayIndex').innerText = `#${currentDay} / ${days}`;
-    
-    const activeType = getTaskType(currentTheme, currentDay);
-    document.getElementById('checklistHeader').innerText = activeType === 'sprintVacation' 
-        ? `Day ${currentDay} Tracker (Vacation Mode)` 
-        : `Day ${currentDay} Tracker`;
+    document.getElementById('checklistHeader').innerText = `Day ${currentDay} Tracker`;
+    document.getElementById('vacationCheckbox').checked = !!vacations[currentTheme][currentDay];
     
     const perfectStat = document.getElementById('perfectDaysCount');
     perfectStat.innerText = `${perfectCount} 🔥`;
@@ -178,11 +193,10 @@
   function renderTasks() {
     const list = document.getElementById('taskList');
     list.innerHTML = '';
-    const type = getTaskType(currentTheme, currentDay);
-    const dayData = progress[type][currentDay] || [];
-    const total = tasks[type].length;
+    const dayData = progress[currentTheme][currentDay] || [];
+    const total = tasks[currentTheme].length;
     
-    tasks[type].forEach((task, index) => {
+    tasks[currentTheme].forEach((task, index) => {
       const isChecked = dayData[index] ? 'checked' : '';
       list.innerHTML += `
         <div class="task">
@@ -199,26 +213,23 @@
   }
 
   function toggleTask(index, isChecked) {
-    const type = getTaskType(currentTheme, currentDay);
-    if (!progress[type][currentDay]) progress[type][currentDay] = [];
-    progress[type][currentDay][index] = isChecked;
+    if (!progress[currentTheme][currentDay]) progress[currentTheme][currentDay] = [];
+    progress[currentTheme][currentDay][index] = isChecked;
     saveData();
     renderGrid();
     renderTasks();
   }
 
   function editTask(index, newValue) {
-    const type = getTaskType(currentTheme, currentDay);
-    tasks[type][index] = newValue;
+    tasks[currentTheme][index] = newValue;
     saveData();
   }
 
   function deleteTask(index) {
-    const type = getTaskType(currentTheme, currentDay);
-    tasks[type].splice(index, 1);
-    for (let day in progress[type]) {
-       if (progress[type][day]) {
-         progress[type][day].splice(index, 1);
+    tasks[currentTheme].splice(index, 1);
+    for (let day in progress[currentTheme]) {
+       if (progress[currentTheme][day]) {
+         progress[currentTheme][day].splice(index, 1);
        }
     }
     saveData();
@@ -231,8 +242,7 @@
     const val = input.value.trim();
     if (!val) return;
     
-    const type = getTaskType(currentTheme, currentDay);
-    tasks[type].push(val);
+    tasks[currentTheme].push(val);
     saveData();
     input.value = '';
     renderGrid();
