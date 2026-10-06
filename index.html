@@ -104,16 +104,33 @@
 
 <script>
   const config = {
-    autumn: { quote: '"Sgaeyl, lock in to golden sunlight, the sound of wind rustling ruby leaves, and the smell of crisp, cool air."', days: 24, special: "Winter Arc Eve: Final Prep" },
+    autumn: { quote: '"Sgaeyl, lock in to golden sunlight, the sound of wind rustling leaves, and the smell of crisp, cool air."', days: 24, special: "Winter Arc Eve: Final Prep" },
     sprint: { quote: '"Snow falling, wind howling, a book read, a mile run, an hour studied. Sgaeyl, while they rest, you build."', days: 65, special: null }
   };
-  
+
   let currentTheme = 'autumn';
   let currentDay = 1;
   
-let defaultTasks = {
-    autumn: [],
-    sprint: []
+  let defaultTasks = {
+    autumn: [
+      'Wake up before 6:45 AM',
+      'Stretch for 10 mins',
+      'Meditate for 5 mins',
+      'Morning Maru walk + voice journaling',
+      'No ChatGPT',
+      '10 mins of Khan Academy',
+      '9 PM screentime cutoff (9:30 lights off)',
+      'Speak Chinese afterschool (only weekdays)'
+    ],
+    sprint: [
+      'Wake up before 6:45 AM',
+      'Stretch for 10 mins',
+      'Meditate for 10 mins',
+      'Morning Maru walk + voice journaling',
+      'Play piano without phone distractions',
+      'Speak Chinese afterschool (only weekdays)',
+      'No fishing for attention (cool, calm, collected)'
+    ]
   };
   
   let savedTasks = JSON.parse(localStorage.getItem('arcTasks'));
